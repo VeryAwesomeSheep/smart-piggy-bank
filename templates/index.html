@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Skarbonka Mateuszek++</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
+</head>
+
+<style>
+  table {
+    border-collapse: collapse;
+    width: 85%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  td {
+    border: 1px solid black;
+    width: 0.1%;
+    white-space: nowrap;
+  }
+
+  h1 {
+    text-align: center;
+  }
+
+  h2 {
+    text-align: center;
+  }
+</style>
+
+<body>
+  <h1>Skarbonka Mateuszek++</h1>
+
+  <h2>Wykres oszczędności</h2>
+  <canvas id="savingsChart" width="900" height="400"></canvas>
+  <script type="text/javascript">
+
+    var ctx = document.getElementById("savingsChart");
+    var myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [{% for item in data_dates %} "{{ item }}", {% endfor %}],
+    datasets: [
+      {
+        label: 'Kwota [zł]',
+        data: [{% for item in data_values %} {{ item }}, {% endfor %}],
+      backgroundColor: ['rgba(255, 99, 132, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(255, 206, 86, 0.2)',
+        'rgba(75, 192, 192, 0.2)',
+        'rgba(153, 102, 255, 0.2)',
+        'rgba(255, 159, 64, 0.2)'
+      ],
+
+        borderColor: [
+          'rgba(255,99,132,1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)'
+        ],
+          borderWidth: 1,
+            tension: 0.1
+          }
+        ]
+      },
+    options: {
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      }
+    }
+    });
+  </script>
+
+  <h2>Stan poszczególnych monet</h2>
+  <canvas id="coinChart" width="900" height="400"></canvas>
+  <script type="text/javascript">
+
+    var ctx = document.getElementById("coinChart");
+    var myChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ["1 grosz", "2 grosze", "5 groszy", "10 groszy", "20 groszy", "50 groszy",
+          "1 złoty", "2 złote", "5 złotych", "Nierozpoznana"],
+        datasets: [
+          {
+            label: 'Ilość monet',
+            data: [{% for item in data_coins %} {{ item }}, {% endfor %}],
+          }
+        ]
+      },
+    options: {
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      }
+    }
+    });
+  </script>
+
+  <h2>Historia wrzuconych monet</h2>
+  <table>
+    <tr>
+      <th>Nr</th>
+      <th>Data</th>
+      <th>Godzina</th>
+      <th>Moneta</th>
+      <th>Suma całkowita</th>
+    </tr>
+
+    {% for item in data_table %}
+    <tr>
+      <td>
+        <p>
+          <center>{{item.id}}</center>
+        </p>
+      </td>
+      <td>
+        <p>
+          <center>{{item.date}}</center>
+        </p>
+      </td>
+      <td>
+        <p>
+          <center>{{item.time}}</center>
+        </p>
+      </td>
+      <td>
+        <p>
+          <center>{{item.coin}}</center>
+        </p>
+      </td>
+      <td>
+        <p>
+          <center>{{item.total}}</center>
+        </p>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+
+</body>
+
+</html>
