@@ -11,6 +11,11 @@
 import sqlite3, json
 from datetime import datetime
 
+#*************************************************************************************************/
+#* Function:  create_db
+#*
+#* Purpose:   Creates database if not exists.
+#*************************************************************************************************/
 def create_db():
   with sqlite3.connect('piggy.db') as con:
     cur = con.cursor()
@@ -22,6 +27,13 @@ def create_db():
                    total REAL)''')
     con.commit()
 
+#*************************************************************************************************/
+#* Function:  get_all
+#*
+#* param[out] data - list of dictionaries with all records from database
+#*
+#* Purpose:   Fetches all records from database.
+#*************************************************************************************************/
 def get_all():
   with sqlite3.connect('piggy.db') as con:
     cur = con.cursor()
@@ -35,21 +47,35 @@ def get_all():
       'date': row[1],
       'time': row[2],
       'coin': row[3],
-      'total':row[4],
+      'total': row[4],
     })
 
   return data
 
+#*************************************************************************************************/
+#* Function:  insert_coin
+#*
+#* @param[in] coin - coin value
+#*
+#* Purpose:   Inserts new record to database.
+#*************************************************************************************************/
 def insert_coin(coin):
   create_db()
 
-  record = [datetime.now().strftime("%d.%m.%Y"), datetime.now().strftime("%H:%M:%S"), coin, get_total() + coin]
+  record = [datetime.now().strftime("%d.%m.%Y"), datetime.now().strftime("%H:%M:%S"), coin, round(get_total() + coin, 2)]
 
   with sqlite3.connect('piggy.db') as con:
     cur = con.cursor()
     cur.execute('INSERT INTO coins VALUES (NULL,?,?,?,?)', record)
     con.commit()
 
+#*************************************************************************************************/
+#* Function:  get_coins
+#*
+#* @param[out] coin_amounts - list of coins amounts
+#*
+#* Purpose:   Fetches coins amounts from database.
+#*************************************************************************************************/
 def get_coins():
   coin_amounts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
   coin_values = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 0]
@@ -65,6 +91,14 @@ def get_coins():
 
   return coin_amounts
 
+#*************************************************************************************************/
+#* Function:  get_total_from_dates
+#*
+#* @param[out] data_dates - list of dates
+#* @param[out] data_values - list of total values
+#*
+#* Purpose:   Fetches dates and max sum from days from database.
+#*************************************************************************************************/
 def get_total_from_dates():
   with sqlite3.connect('piggy.db') as con:
     cur = con.cursor()
@@ -82,6 +116,13 @@ def get_total_from_dates():
 
   return data_dates, data_values
 
+#*************************************************************************************************/
+#* Function:  get_total
+#*
+#* @param[out] output - total sum of coins
+#*
+#* Purpose:   Fetches total sum of coins from database.
+#*************************************************************************************************/
 def get_total():
   with sqlite3.connect('piggy.db') as con:
     cur = con.cursor()
@@ -90,18 +131,13 @@ def get_total():
 
   return 0 if output[0] is None else output[0]
 
+#*************************************************************************************************/
+#* Function:  clear_db
+#*
+#* Purpose:   Clears database.
+#*************************************************************************************************/
 def clear_db():
   with sqlite3.connect('piggy.db') as con:
     cur = con.cursor()
-    cur.execute('DROP TABLE coins')
-    con.commit()
-
-#*************************************************************************************************/
-
-def insert_coin_test(coin, date):
-  record = [date, datetime.now().strftime("%H:%M:%S"), coin, round(get_total() + coin, 2)]
-
-  with sqlite3.connect('piggy.db') as con:
-    cur = con.cursor()
-    cur.execute('INSERT INTO coins VALUES (NULL,?,?,?,?)', record)
+    cur.execute('DELETE FROM coins')
     con.commit()

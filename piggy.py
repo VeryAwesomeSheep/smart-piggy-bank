@@ -5,14 +5,14 @@
 #* Created:   ZUT - 2023/2024
 #*
 #* Name:      piggy.py
-#* Purpose:   Flask server. Responsible for handling database and displaying data.
+#* Purpose:   Flask server, the main brains of the project. Handles coin detection, database
+#             operations, web interface and physical display.
 #*************************************************************************************************/
 
-#run from home dir with "flask --app server run --debug --host=0.0.0.0 --port=7001"
-
 from flask import Flask, url_for, redirect, render_template, request
-import json, sqlite3
+
 from tools.db_tools import *
+from tools.gpio_tools import *
 
 app = Flask(__name__)
 
@@ -26,3 +26,6 @@ def index():
 
   return render_template('index.html', data_dates=data_dates,
                          data_values=data_values, data_coins=data_coins, data_table=data_table)
+
+if __name__ == "__main__":
+  app.run(debug=False, host='0.0.0.0', port=7001)
