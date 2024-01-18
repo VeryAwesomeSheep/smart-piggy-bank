@@ -140,4 +140,5 @@ def clear_db():
   with sqlite3.connect('piggy.db') as con:
     cur = con.cursor()
     cur.execute('DELETE FROM coins')
+    cur.execute('DELETE FROM sqlite_sequence WHERE name = "coins"')
     con.commit()

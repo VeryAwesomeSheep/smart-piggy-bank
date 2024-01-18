@@ -47,6 +47,7 @@ def detect_button_callback(channel):
   if GPIO.input(CLEAR_DB_BUTTON_PIN):
     clear_db()
     print("Database cleared")
+    disp_clear_db()
 
 #*************************************************************************************************/
 #* Function:  detect_sensor1_callback
@@ -93,6 +94,37 @@ def detect_sensor2_callback(channel):
     disp_inserted_coin(calculate_size(elapsed_time_total, elapsed_time_sensor2))
 
 #*************************************************************************************************/
+#* Function:  disp_clear_db
+#*
+#* Purpose:   Puts the information about clearing the database on the screen.
+#*************************************************************************************************/
+def disp_clear_db():
+  image = Image.new("RGB", (WIDTH, HEIGHT), color=(0, 0, 0))
+  draw = ImageDraw.Draw(image)
+  font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20)
+
+  draw.rectangle((0, 0, WIDTH, HEIGHT), (0, 0, 0))
+
+  text1 = "Database"
+  text2 = "cleared"
+
+  w1, h1 = draw.textsize(text1, font=font)
+  w2, h2 = draw.textsize(text2, font=font)
+
+  x1 = (WIDTH - w1) // 2
+  y1 = (HEIGHT - h1) // 2 - h1
+  x2 = (WIDTH - w2) // 2
+  y2 = (HEIGHT - h2) // 2
+
+  draw.text((x1, y1), text1, font=font, fill=(255, 255, 255))
+  draw.text((x2, y2), text2, font=font, fill=(255, 255, 255))
+
+  display.display(image)
+
+  time.sleep(5)
+  disp_current_savings()
+
+#*************************************************************************************************/
 #* Function:  disp_inserted_coin
 #*
 #* Purpose:   Updates the screen with the value of inserted coin.
@@ -104,13 +136,26 @@ def disp_inserted_coin(coin):
   font2 = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 30)
 
   draw.rectangle((0, 0, WIDTH, HEIGHT), (0, 0, 0))
-  draw.text((80, 80), "Inserted:", font=font, fill=(255, 255, 255))
+
+  text1 = "Inserted:"
   if coin == 0:
-    draw.text((70, 120), "NULL", font=font2, fill=(255, 255, 255))
+    text2 = "NULL"
   elif coin < 1:
-    draw.text((70, 120), "{} gr".format(coin), font=font2, fill=(255, 255, 255))
+    text2 = "{} gr".format(coin)
   else:
-    draw.text((70, 120), "{} zł".format(coin), font=font2, fill=(255, 255, 255))
+    text2 = "{} zł".format(coin)
+
+  w1, h1 = draw.textsize(text1, font=font)
+  w2, h2 = draw.textsize(text2, font=font2)
+
+  x1 = (WIDTH - w1) // 2
+  y1 = (HEIGHT - h1) // 2 - h1 - 10  # Subtract 10 to move the text up
+  x2 = (WIDTH - w2) // 2
+  y2 = (HEIGHT - h2) // 2 + 10  # Add 10 to move the text down
+
+  draw.text((x1, y1), text1, font=font, fill=(255, 255, 255))
+  draw.text((x2, y2), text2, font=font2, fill=(255, 255, 255))
+
   display.display(image)
 
   time.sleep(5)
@@ -131,9 +176,14 @@ def disp_current_savings():
   font2 = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 30)
 
   draw.rectangle((0, 0, WIDTH, HEIGHT), (0, 0, 0))
-  draw.text((80, 0), "Savings:", font=font, fill=(255, 255, 255))
-  draw.text((60, 40), "{} zł".format(savings), font=font2, fill=(255, 255, 255))
-  draw.text((0, 90), "----------------------------------", font=font, fill=(255, 255, 255))
+
+  w1, h1 = draw.textsize("Savings:", font=font)
+  w2, h2 = draw.textsize("{} zł".format(savings), font=font2)
+  draw.text(((WIDTH - w1) // 2, 0), "Savings:", font=font, fill=(255, 255, 255))
+  draw.text(((WIDTH - w2) // 2, 40), "{} zł".format(savings), font=font2, fill=(255, 255, 255))
+
+  w3, h3 = draw.textsize("----------------------------------", font=font)
+  draw.text(((WIDTH - w3) // 2, 90), "----------------------------------", font=font, fill=(255, 255, 255))
 
   table_structure = [
     ("1gr", coins[0]),
@@ -145,8 +195,7 @@ def disp_current_savings():
     ("1zł", coins[6]),
     ("2zł", coins[7]),
     ("5zł", coins[8]),
-    ("NULL", coins[9])
-    ]
+    ("NULL", coins[9])]
 
   col_width = WIDTH // 2
 
@@ -156,7 +205,9 @@ def disp_current_savings():
     for j in range(2):
       if i + j < len(table_structure):
         cell = table_structure[i + j]
-        draw.text((x_text, y_text), "{}: {}".format(cell[0], cell[1]), font=font, fill=(255, 255, 255))
+        cell_text = "{}: {}".format(cell[0], cell[1])
+        w4, h4 = draw.textsize(cell_text, font=font)
+        draw.text((x_text + (col_width - w4) // 2, y_text), cell_text, font=font, fill=(255, 255, 255))
         x_text += col_width
     y_text += 20
 
