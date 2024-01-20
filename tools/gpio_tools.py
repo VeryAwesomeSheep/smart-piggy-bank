@@ -140,8 +140,6 @@ def disp_inserted_coin(coin):
   text1 = "Inserted:"
   if coin == 0:
     text2 = "NULL"
-  elif coin < 1:
-    text2 = "{} gr".format(coin)
   else:
     text2 = "{} zł".format(coin)
 
